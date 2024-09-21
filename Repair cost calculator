@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(RepairCostCalculatorApp());
+}
+
+class RepairCostCalculatorApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Repair cost calculator',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: RepairCalculatorHomePage(),
+    );
+  }
+}
+
+class RepairCalculatorHomePage extends StatefulWidget {
+  @override
+  _RepairCalculatorHomePageState createState() => _RepairCalculatorHomePageState();
+}
+
+class _RepairCalculatorHomePageState extends State<RepairCalculatorHomePage> {
+  final _quantityController = TextEditingController();
+  final _priceController = TextEditingController();
+  String _selectedRepairType = 'Painting';
+  double _totalCost = 0.0;
+
+  List<String> repairTypes = [
+    'Painting',
+    'Laying tiles',
+    'Floor laying', 
+  ];
+
+  void _calculateCost() {
+    double quantity = double.tryParse(_quantityController.text) ?? 0;
+    double price = double.tryParse(_priceController.text) ?? 0;
+
+    setState(() {
+      _totalCost = quantity * price;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Repair cost calculator'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            DropdownButton<String>(
+              value: _selectedRepairType,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRepairType = newValue!;
+                });
+              },
+              items: repairTypes.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            TextField(
+              controller: _quantityController,
+              decoration: InputDecoration(labelText: 'Quantity (m² or units)'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _priceController,
+              decoration: InputDecoration(labelText: 'Price per unit (\$)'), 
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _calculateCost,
+              child: Text('Calculate'),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Total cost: \$${_totalCost.toStringAsFixed(2)}', 
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
